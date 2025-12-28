@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veri Yükleme - Kargo Takip</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .upload-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .upload-zone {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .upload-zone:hover {
+            background: #f8f9ff;
+            border-color: #764ba2;
+        }
+        .upload-zone.dragover {
+            background: #e8ebff;
+            border-color: #667eea;
+        }
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .file-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .result-box.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result-box.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center text-white mb-4">
+            <h1>📤 Veri Yükleme Merkezi</h1>
+            <p>Excel dosyalarınızı sürükle-bırak veya seçerek yükleyin</p>
+            <a href="/" class="btn btn-light btn-sm">← Ana Sayfa</a>
+        </div>
+
+        <div class="upload-card">
+            <h3 class="mb-4">📊 Veritabanı Durumu</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="yakit-count">Yükleniyor...</div>
+                    <div class="stat-label">Yakıt Kayıtları</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="agirlik-count">Yükleniyor...</div>
+                    <div class="stat-label">Ağırlık Kayıtları</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="arac-takip-count">Yükleniyor...</div>
+                    <div class="stat-label">Araç Takip Kayıtları</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="plaka-count">Yükleniyor...</div>
+                    <div class="stat-label">Toplam Plaka</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yakıt Yükleme -->
+        <div class="upload-card">
+            <h3>⛽ Yakıt Verileri</h3>
+            <p class="text-muted">Yakıt Excel dosyanızı yükleyin (günlük yakıt alımları)</p>
+
+            <div class="upload-zone" id="yakit-zone" onclick="document.getElementById('yakit-file').click()">
+                <h4>📁 Dosya Seç veya Sürükle-Bırak</h4>
+                <p class="text-muted">Excel formatı (.xlsx, .xls)</p>
+                <input type="file" id="yakit-file" accept=".xlsx,.xls" style="display: none">
+            </div>
+
+            <div class="file-info" id="yakit-info" style="display: none"></div>
+            <div class="progress-container" id="yakit-progress">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+                <p class="text-center mt-2">Yükleniyor...</p>
+            </div>
+            <div class="result-box" id="yakit-result"></div>
+        </div>
+
+        <!-- Ağırlık Yükleme -->
+        <div class="upload-card">
+            <h3>⚖️ Ağırlık Verileri</h3>
+            <p class="text-muted">Ağırlık Excel dosyanızı yükleyin (taşınan yükler)</p>
+
+            <div class="upload-zone" id="agirlik-zone" onclick="document.getElementById('agirlik-file').click()">
+                <h4>📁 Dosya Seç veya Sürükle-Bırak</h4>
+                <p class="text-muted">Excel formatı (.xlsx, .xls)</p>
+                <input type="file" id="agirlik-file" accept=".xlsx,.xls" style="display: none">
+            </div>
+
+            <div class="file-info" id="agirlik-info" style="display: none"></div>
+            <div class="progress-container" id="agirlik-progress">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+                <p class="text-center mt-2">Yükleniyor...</p>
+            </div>
+            <div class="result-box" id="agirlik-result"></div>
+        </div>
+
+        <!-- Araç Takip Yükleme -->
+        <div class="upload-card">
+            <h3>🚛 Araç Takip Verileri</h3>
+            <p class="text-muted">Araç takip Excel dosyanızı yükleyin (GPS verileri)</p>
+
+            <div class="upload-zone" id="arac-takip-zone" onclick="document.getElementById('arac-takip-file').click()">
+                <h4>📁 Dosya Seç veya Sürükle-Bırak</h4>
+                <p class="text-muted">Excel formatı (.xlsx, .xls)</p>
+                <input type="file" id="arac-takip-file" accept=".xlsx,.xls" style="display: none">
+            </div>
+
+            <div class="file-info" id="arac-takip-info" style="display: none"></div>
+            <div class="progress-container" id="arac-takip-progress">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+                <p class="text-center mt-2">Yükleniyor...</p>
+            </div>
+            <div class="result-box" id="arac-takip-result"></div>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>💡 İpucu:</strong> Yeni veriler mevcut verilere eklenir. Aynı dosyayı tekrar yüklerseniz duplicate kontrol yapılır.
+        </div>
+    </div>
+
+    <script>
+        function setupUpload(type) {
+            const fileInput = document.getElementById(`${type}-file`);
+            const zone = document.getElementById(`${type}-zone`);
+            const info = document.getElementById(`${type}-info`);
+            const progress = document.getElementById(`${type}-progress`);
+            const result = document.getElementById(`${type}-result`);
+
+            // Drag & Drop
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('dragover');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelect(type, files[0]);
+                }
+            });
+
+            // File Select
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(type, e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFileSelect(type, file) {
+            const info = document.getElementById(`${type}-info`);
+            const progress = document.getElementById(`${type}-progress`);
+            const result = document.getElementById(`${type}-result`);
+
+            // Dosya bilgisi göster
+            info.style.display = 'block';
+            info.innerHTML = `
+                <strong>📄 ${file.name}</strong><br>
+                <small>Boyut: ${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+            `;
+
+            // Upload işlemi
+            uploadFile(type, file);
+        }
+
+        function uploadFile(type, file) {
+            const progress = document.getElementById(`${type}-progress`);
+            const result = document.getElementById(`${type}-result`);
+            const progressBar = progress.querySelector('.progress-bar');
+
+            progress.style.display = 'block';
+            result.style.display = 'none';
+            progressBar.style.width = '0%';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    progressBar.style.width = percent + '%';
+                }
+            });
+
+            xhr.addEventListener('load', () => {
+                progress.style.display = 'none';
+
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    result.className = 'result-box success';
+                    result.style.display = 'block';
+                    result.innerHTML = `
+                        <h5>✅ Başarılı!</h5>
+                        <p>📊 Excel'de: <strong>${response.total || 0}</strong> satır</p>
+                        <p>✅ Eklendi: <strong>${response.inserted || 0}</strong> yeni kayıt</p>
+                        <p>⏭️ Duplicate: <strong>${response.duplicates || 0}</strong> kayıt atlandı</p>
+                        <p>⚠️ Boş/geçersiz: <strong>${response.skipped || 0}</strong> kayıt atlandı</p>
+                    `;
+
+                    // İstatistikleri güncelle
+                    updateStats();
+                } else {
+                    const response = JSON.parse(xhr.responseText);
+                    result.className = 'result-box error';
+                    result.style.display = 'block';
+                    result.innerHTML = `
+                        <h5>❌ Hata!</h5>
+                        <p>${response.error || 'Bilinmeyen hata'}</p>
+                        <p class="small">Lütfen Excel sütun isimlerini kontrol edin (Plaka, Miktar vs.)</p>
+                    `;
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                progress.style.display = 'none';
+                result.className = 'result-box error';
+                result.style.display = 'block';
+                result.innerHTML = '<h5>❌ Bağlantı hatası!</h5><p>Sunucuya ulaşılamadı.</p>';
+            });
+
+            xhr.open('POST', '/api/upload-excel');
+            xhr.send(formData);
+        }
+
+        function updateStats() {
+            fetch('/api/database-stats')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('yakit-count').textContent = data.yakit_count || 0;
+                    document.getElementById('agirlik-count').textContent = data.agirlik_count || 0;
+                    document.getElementById('arac-takip-count').textContent = data.arac_takip_count || 0;
+                    document.getElementById('plaka-count').textContent = data.plaka_sayisi || 0;
+                });
+        }
+
+        // Setup
+        setupUpload('yakit');
+        setupUpload('agirlik');
+        setupUpload('arac-takip');
+
+        // Sayfa yüklendiğinde istatistikleri çek
+        updateStats();
+    </script>
+</body>
+</html>
