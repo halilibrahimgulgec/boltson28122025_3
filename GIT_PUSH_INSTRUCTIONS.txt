@@ -1,0 +1,85 @@
+🚀 GitHub'a Push ve Railway Deployment Adımları
+===============================================
+
+✅ GIT REPOSITORY HAZIR!
+-----------------------
+- Git initialize edildi
+- İlk commit yapıldı: "Production ready for Railway deployment - Clean build"
+- 74 dosya commit'lendi
+
+📋 ADIM 1: GitHub Repository Oluştur
+-----------------------------------
+1. https://github.com/new adresine git
+2. Repository adı ver (örn: kargo-takip-system)
+3. Public veya Private seç
+4. "Create repository" tıkla
+
+📋 ADIM 2: GitHub'a Push Et
+--------------------------
+GitHub'da yeni oluşturduğun repo sayfasında gösterilen komutları kullan:
+
+# Remote ekle (GitHub'daki repo URL'ini kullan)
+git remote add origin https://github.com/KULLANICI_ADIN/REPO_ADIN.git
+
+# Branch adını main yap (opsiyonel, modern standart)
+git branch -M main
+
+# Push et
+git push -u origin main
+
+VEYA (eğer master kullanmaya devam edersen):
+git push -u origin master
+
+📋 ADIM 3: Railway'de Deploy Et
+------------------------------
+1. https://railway.app/ adresine git
+2. "Login" > GitHub ile giriş yap
+3. "New Project" tıkla
+4. "Deploy from GitHub repo" seç
+5. Az önce push ettiğin repo'yu seç
+6. Railway otomatik build'e başlar
+
+📋 ADIM 4: Environment Variables Ekle
+------------------------------------
+Railway Dashboard'da proje sayfasına git:
+
+1. "Variables" sekmesini aç
+2. "New Variable" tıkla
+3. Aşağıdaki değişkenleri ekle:
+
+VITE_SUPABASE_URL=https://qlwycqwquapwwgfysscy.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsd3ljcXdxdWFwd3dnZnlzc2N5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MTY0MTcsImV4cCI6MjA3NDk5MjQxN30.zSxr_iw0E6wS8fSebX4gFh_YYv2GYDU3UtRj_N2o4qY
+
+SUPABASE_URL=https://qlwycqwquapwwgfysscy.supabase.co
+SUPABASE_ANAHTAR=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsd3ljcXdxdWFwd3dnZnlzc2N5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MTY0MTcsImV4cCI6MjA3NDk5MjQxN30.zSxr_iw0E6wS8fSebX4gFh_YYv2GYDU3UtRj_N2o4qY
+
+SECRET_KEY=change-this-to-a-random-secure-key-12345
+
+4. "Deploy" veya "Redeploy" tıkla
+
+📋 ADIM 5: Test Et
+-----------------
+Deploy tamamlandığında Railway sana bir URL verir:
+https://your-app-name.railway.app
+
+Test URL'leri:
+- Health Check: /health
+- Ana Sayfa: /
+- API: /api/plakalar
+
+🎉 BAŞARILI!
+-----------
+Uygulamanız artık canlıda!
+
+💡 İPUCU: Railway CLI Kullan (Alternatif)
+----------------------------------------
+Eğer GitHub kullanmak istemiyorsan:
+
+npm i -g @railway/cli
+railway login
+railway link  # Mevcut Railway projesine bağlan
+railway up    # Direkt upload et
+
+📚 Detaylı Bilgi
+---------------
+Bak: RAILWAY_DEPLOYMENT_GUIDE.md
